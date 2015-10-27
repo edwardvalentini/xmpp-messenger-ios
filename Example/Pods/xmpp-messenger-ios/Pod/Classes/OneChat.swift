@@ -355,23 +355,22 @@ extension OneChat: XMPPStreamDelegate {
 	* However, if multiple delegates implement this method, then the first to invoke the completionHandler "wins".
 	* And subsequent invocations of the completionHandler are ignored.
 	**/
-	
-	public func xmppStream(sender: XMPPStream, didReceiveTrust trust: SecTrustRef, completionHandler:
-		XMPPStreamCompletionHandler) {
-			let bgQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-			
-			dispatch_async(bgQueue, { () -> Void in
-				var result: SecTrustResultType =  kSecTrustResultDeny as! SecTrustResultType
-				let status = SecTrustEvaluate(trust, &result)
-				
-				if status == noErr {
-					completionHandler(shouldTrustPeer: true)
-				} else {
-					completionHandler(shouldTrustPeer: false)
-				}
-			})
-	}
-	
+    public func xmppStream(sender: XMPPStream!, didReceiveTrust trust: SecTrust!, completionHandler: ((Bool) -> Void)!) {
+        
+        let bgQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+        
+        dispatch_async(bgQueue, { () -> Void in
+            var result: SecTrustResultType =  kSecTrustResultDeny as! SecTrustResultType
+            let status = SecTrustEvaluate(trust, &result)
+            
+            if status == noErr {
+                completionHandler(true)
+            } else {
+                completionHandler(false)
+            }
+        })
+    }
+    
 	public func xmppStreamDidSecure(sender: XMPPStream) {
 		//did secure
 	}
