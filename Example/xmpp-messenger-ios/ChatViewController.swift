@@ -17,6 +17,7 @@ class ChatViewController: JSQMessagesViewController, OneMessageDelegate, Contact
 	var messages = NSMutableArray()
 	var recipient: XMPPUserCoreDataStorageObject?
 	var firstTime = true
+	var userDetails = UIView?()
 	
 	// Mark: Life Cycle
 	
@@ -30,21 +31,36 @@ class ChatViewController: JSQMessagesViewController, OneMessageDelegate, Contact
 			self.senderDisplayName = OneChat.sharedInstance.xmppStream?.myJID.bare()
 		}
 		
-		self.collectionView!.collectionViewLayout.springinessEnabled = true
+		self.collectionView!.collectionViewLayout.springinessEnabled = false
 		self.inputToolbar!.contentView!.leftBarButtonItem!.hidden = true
 	}
 	
 	override func viewWillAppear(animated: Bool) {
 		if let recipient = recipient {
 			self.navigationItem.rightBarButtonItems = []
-			navigationItem.title = recipient.displayName
+			
+                	navigationItem.title = recipient.displayName
+
+            		// Mark: Adding LastActivity functionality to NavigationBar
+            		OneLastActivity.sendLastActivityQueryToJID((recipient.jidStr), sender: OneChat.sharedInstance.xmppLastActivity) { (response, forJID, error) -> Void in
+                		let lastActivityResponse = OneLastActivity.sharedInstance.getLastActivityFrom((response?.lastActivitySeconds())!)
+                
+                		self.userDetails = OneLastActivity.sharedInstance.addLastActivityLabelToNavigationBar(lastActivityResponse, displayName: recipient.displayName)
+                		self.navigationController!.view.addSubview(self.userDetails!)
+                		
+                		if (self.userDetails != nil) {
+                    			self.navigationItem.title = ""
+                		}
+            		}
 			
 			dispatch_async(dispatch_get_main_queue(), { () -> Void in
 				self.messages = OneMessage.sharedInstance.loadArchivedMessagesFrom(jid: recipient.jidStr)
 				self.finishReceivingMessageAnimated(true)
 			})
 		} else {
-			navigationItem.title = "New message"
+			if userDetails == nil {
+                        	navigationItem.title = "New message"
+            		}
 			
 			self.inputToolbar!.contentView!.rightBarButtonItem!.enabled = false
 			self.navigationItem.setRightBarButtonItem(UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: "addRecipient"), animated: true)
@@ -61,6 +77,10 @@ class ChatViewController: JSQMessagesViewController, OneMessageDelegate, Contact
 		self.scrollToBottomAnimated(true)
 	}
 	
+	override func viewWillDisappear(animated: Bool) {
+        userDetails?.removeFromSuperview()
+    }
+	
 	// Mark: Private methods
 	
 	func addRecipient() {
@@ -73,7 +93,9 @@ class ChatViewController: JSQMessagesViewController, OneMessageDelegate, Contact
 	
 	func didSelectContact(recipient: XMPPUserCoreDataStorageObject) {
 		self.recipient = recipient
-		navigationItem.title = recipient.displayName
+		if userDetails == nil {
+            		navigationItem.title = recipient.displayName
+        	}
 		
 		if !OneChats.knownUserForJid(jidStr: recipient.jidStr) {
 			OneChats.addUserToChatList(jidStr: recipient.jidStr)
@@ -85,25 +107,37 @@ class ChatViewController: JSQMessagesViewController, OneMessageDelegate, Contact
 	
 	// Mark: JSQMessagesViewController method overrides
 	
-	override func textViewDidBeginEditing(textView: UITextView) {
-		super.textViewDidBeginEditing(textView)
-		
-		if let recipient = recipient {
-			OneMessage.sendIsComposingMessage(recipient.jidStr, completionHandler: { (stream, message) -> Void in
-				//compose sent
-			})
-		}
-	}
-	
-	override func textViewDidEndEditing(textView: UITextView) {
-		super.textViewDidEndEditing(textView)
-	
-		if let recipient = recipient {
-			OneMessage.sendIsNotComposingMessage(recipient.jidStr, completionHandler: { (stream, message) -> Void in
-				//end compose sent
-			})
-		}
-	}
+	var isComposing = false
+    	var timer: NSTimer?
+    
+	override func textViewDidChange(textView: UITextView) {
+        	super.textViewDidChange(textView)
+        
+        	if textView.text.characters.count == 0 {
+            		if isComposing {
+                		hideTypingIndicator()
+            		}
+        	} else {
+            		timer?.invalidate()
+            		if !isComposing {
+                		self.isComposing = true
+                		OneMessage.sendIsComposingMessage((recipient?.jidStr)!, completionHandler: { (stream, message) -> Void in
+                    			self.timer = NSTimer.scheduledTimerWithTimeInterval(4.0, target: self, selector: "hideTypingIndicator", userInfo: nil, repeats: false)
+                		})
+            		} else {
+                		self.timer = NSTimer.scheduledTimerWithTimeInterval(4.0, target: self, selector: "hideTypingIndicator", userInfo: nil, repeats: false)
+            		}
+        	}
+    	}
+    
+    	func hideTypingIndicator() {
+        	if let recipient = recipient {
+            		self.isComposing = false
+            		OneMessage.sendIsComposingMessage((recipient.jidStr)!, completionHandler: { (stream, message) -> Void in
+            
+            		})
+        	}
+    	}
 	
 	override func didPressSendButton(button: UIButton!, withMessageText text: String!, senderId: String!, senderDisplayName: String!, date: NSDate!) {
 		let fullMessage = JSQMessage(senderId: OneChat.sharedInstance.xmppStream?.myJID.bare(), senderDisplayName: OneChat.sharedInstance.xmppStream?.myJID.bare(), date: NSDate(), text: text)
