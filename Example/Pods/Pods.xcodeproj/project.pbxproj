@@ -458,6 +458,7 @@
 		FDD376108AF98D19DB69479FB368B4C7 /* JSQMessagesComposerTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = D71DECB664218CD7E49DBD4D083C0A78 /* JSQMessagesComposerTextView.m */; };
 		FE31CBEC11B3755009C31E0BABD12969 /* FMDatabaseAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = BB09A5ED82F16D95FB22D35E593B4415 /* FMDatabaseAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FF44E0D7CADC9424A4F402434F83570E /* XMPP.h in Headers */ = {isa = PBXBuildFile; fileRef = 0DAE93DF844C7768131833AFF40F8E4A /* XMPP.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FF7334271C05F86D0047C9E5 /* OneLastActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF7334241C05F6670047C9E5 /* OneLastActivity.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1043,6 +1044,7 @@
 		FCA24B1BFEB9664E747F23F7F595886B /* CocoaLumberjack-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "CocoaLumberjack-prefix.pch"; sourceTree = "<group>"; };
 		FD4ED14E78426B8F70A1981E8D31B279 /* XMPPvCardTempCoreDataStorageObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = XMPPvCardTempCoreDataStorageObject.h; path = "Extensions/XEP-0054/CoreDataStorage/XMPPvCardTempCoreDataStorageObject.h"; sourceTree = "<group>"; };
 		FF131223EB77735795749920964E6311 /* XMPPStream.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = XMPPStream.m; path = Core/XMPPStream.m; sourceTree = "<group>"; };
+		FF7334241C05F6670047C9E5 /* OneLastActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OneLastActivity.swift; path = Pod/Classes/OneLastActivity.swift; sourceTree = "<group>"; };
 		FFC57B90C0165DB27B7FFB78549D4E7D /* XMPPMessage+XEP_0066.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "XMPPMessage+XEP_0066.h"; path = "Extensions/XEP-0066/XMPPMessage+XEP_0066.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1415,6 +1417,7 @@
 				800BD501C2B483B868FE16D18A975E6E /* kXMPP.swift */,
 				23B354125467C81BF5033CCC379C190C /* OneChat.swift */,
 				115ADA384F8DA3C69CDE61DFECA9AA79 /* OneChats.swift */,
+				FF7334241C05F6670047C9E5 /* OneLastActivity.swift */,
 				F1686CB052E8E449FA5560A7E1D2CA54 /* OneMessage.swift */,
 				5DC8DCB314F9A65AF1869873B4D29E8B /* OnePresence.swift */,
 				612BC2929EA60143BE4503285F3C6752 /* OneRoom.swift */,
@@ -2586,7 +2589,7 @@
 		D41D8CD98F00B204E9800998ECF8427E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0700;
+				LastSwiftUpdateCheck = 0710;
 				LastUpgradeCheck = 0700;
 			};
 			buildConfigurationList = 2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */;
@@ -2818,6 +2821,7 @@
 				83442272FB9BFB02B9389175F05855B0 /* OneMessage.swift in Sources */,
 				E626F91AB3C2C8E34A9DA1549E74D8D5 /* OnePresence.swift in Sources */,
 				42B4848EFF2B0D66300338178050F1D6 /* OneRoom.swift in Sources */,
+				FF7334271C05F86D0047C9E5 /* OneLastActivity.swift in Sources */,
 				37AF72B874B053E1E7D46FE7D9596FB2 /* OneRoster.swift in Sources */,
 				7F2FA92C77A2B77007E44E586D65E8D7 /* xmpp-messenger-ios-dummy.m in Sources */,
 			);
@@ -3130,6 +3134,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 18AC9BB71BD0318FE12860FE3A0158E2 /* CocoaAsyncSocket.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 7.4.2;
 				DEFINES_MODULE = YES;
@@ -3147,6 +3152,7 @@
 				PRODUCT_NAME = CocoaAsyncSocket;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -3157,6 +3163,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 18AC9BB71BD0318FE12860FE3A0158E2 /* CocoaAsyncSocket.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 7.4.2;
 				DEFINES_MODULE = YES;

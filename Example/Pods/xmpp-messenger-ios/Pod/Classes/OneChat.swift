@@ -36,12 +36,13 @@ public class OneChat: NSObject {
 	var xmppCapabilitiesStorage: XMPPCapabilitiesCoreDataStorage?
 	var xmppMessageDeliveryRecipts: XMPPMessageDeliveryReceipts?
 	var xmppCapabilities: XMPPCapabilities?
+    public var xmppLastActivity : XMPPLastActivity?
 	var user = XMPPUserCoreDataStorageObject()
 	var chats: OneChats?
 	let presenceTest = OnePresence()
 	let messageTest = OneMessage()
 	let rosterTest = OneRoster()
-	
+	let lastActivityTest = OneLastActivity()
 	var customCertEvaluation: Bool?
 	var isXmppConnected: Bool?
 	var password: String?
@@ -149,7 +150,7 @@ public class OneChat: NSObject {
 		//
 		// The XMPPCapabilitiesCoreDataStorage is an ideal solution.
 		// It can also be shared amongst multiple streams to further reduce hash lookups.
-		
+		xmppLastActivity = XMPPLastActivity(dispatchQueue: dispatch_get_main_queue())
 		xmppCapabilitiesStorage = XMPPCapabilitiesCoreDataStorage.sharedInstance()
 		xmppCapabilities = XMPPCapabilities(capabilitiesStorage: xmppCapabilitiesStorage)
 		
@@ -167,7 +168,8 @@ public class OneChat: NSObject {
 		xmppvCardAvatarModule!.activate(xmppStream)
 		xmppCapabilities!.activate(xmppStream)
 		xmppMessageDeliveryRecipts!.activate(xmppStream)
-		
+		xmppLastActivity!.activate(xmppStream)
+        
 		// Add ourself as a delegate to anything we may be interested in
 		xmppStream!.addDelegate(self, delegateQueue: dispatch_get_main_queue())
 		xmppRoster!.addDelegate(self, delegateQueue: dispatch_get_main_queue())
@@ -181,7 +183,11 @@ public class OneChat: NSObject {
 		xmppStream!.addDelegate(presenceTest, delegateQueue: dispatch_get_main_queue())
 		xmppRoster!.addDelegate(presenceTest, delegateQueue: dispatch_get_main_queue())
 		
-		// Optional:
+        xmppStream!.addDelegate(lastActivityTest, delegateQueue: dispatch_get_main_queue())
+        xmppRoster!.addDelegate(lastActivityTest, delegateQueue: dispatch_get_main_queue())
+        xmppLastActivity!.addDelegate(lastActivityTest, delegateQueue: dispatch_get_main_queue())
+
+        // Optional:
 		//
 		// Replace me with the proper domain and port.
 		// The example below is setup for a typical google talk account.
@@ -203,7 +209,9 @@ public class OneChat: NSObject {
 	private func teardownStream() {
 		xmppStream!.removeDelegate(self)
 		xmppRoster!.removeDelegate(self)
-		
+		xmppLastActivity!.removeDelegate(lastActivityTest)
+        
+        xmppLastActivity!.deactivate()
 		xmppReconnect!.deactivate()
 		xmppRoster!.deactivate()
 		xmppvCardTempModule!.deactivate()
@@ -222,6 +230,7 @@ public class OneChat: NSObject {
 		xmppvCardAvatarModule = nil;
 		xmppCapabilities = nil;
 		xmppCapabilitiesStorage = nil;
+        xmppLastActivity = nil;
 	}
 	
 	// MARK: Connect / Disconnect
