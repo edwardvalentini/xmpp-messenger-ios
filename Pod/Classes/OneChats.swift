@@ -5,6 +5,7 @@
 //  Created by Paul on 04/03/2015.
 //  Copyright (c) 2015 ProcessOne. All rights reserved.
 //
+//  Bugs fixed by Orkhan Alizade 24/11/2015
 
 import Foundation
 import XMPPFramework
@@ -93,28 +94,6 @@ public class OneChats: NSObject, NSFetchedResultsControllerDelegate {
 		
 		fetchRequest.predicate = predicate
 		fetchRequest.fetchLimit = 1
-		
-		//		if let results = moc?.executeFetchRequest(fetchRequest, error: nil) {
-		//			println("get user from xmpp - results")
-		//			var user: XMPPUserCoreDataStorageObject
-		//			var archivedUser = NSMutableArray()
-		//
-		//			for user in results {
-		//				println(user)
-		//				// var element = DDXMLElement(XMLString: user.messageStr, error: nil)
-		//				//        let sender: String
-		//				//
-		//				//        if element.attributeStringValueForName("to") != NSUserDefaults.standardUserDefaults().stringForKey("kXMPPmyJID")! && !(element.attributeStringValueForName("to") as NSString).containsString(NSUserDefaults.standardUserDefaults().stringForKey("kXMPPmyJID")!) {
-		//				//          sender = element.attributeStringValueForName("to")
-		//				//          if !archivedMessage.containsObject(sender) {
-		//				//            archivedMessage.addObject(sender)
-		//				//          }
-		//				//        }
-		//			}
-		//			//println("so response \(archivedMessage.count) from \(archivedMessage)")
-		//			//return archivedMessage
-		//		}
-		//return nil
 	}
 	
 	
@@ -163,6 +142,12 @@ public class OneChats: NSObject, NSFetchedResultsControllerDelegate {
 			for message in results! {
 				moc?.deleteObject(message as! NSManagedObject)
 			}
+			
+			do {
+                		try moc?.save()
+            		} catch let error {
+                		print(error)
+            		}
 		} catch _ {
 		}
 	}
@@ -193,9 +178,31 @@ public class OneChats: NSObject, NSFetchedResultsControllerDelegate {
 							moc?.deleteObject(message as! NSManagedObject)
 						}
 					}
+					
+					do {
+                				try moc?.save()
+            				} catch let error {
+                				print(error)
+            				}
 				}
 			} catch _ {
 			}
 		}
 	}
+	
+	// Mark: Will show "No recent chats" on OpenChatsTableViewController
+	public class func noRecentChats() -> UIView {
+        	var noRecentChats = UILabel()
+        
+        	if sharedInstance.getActiveUsersFromCoreDataStorage()?.count == 0 {
+        	    let width = UIScreen.mainScreen().bounds.width
+        	    let height = UIScreen.mainScreen().bounds.height
+            
+        	    noRecentChats = UILabel(frame: CGRectMake((width - 140) / 2, (height - 25 - 120) / 2, 140, 50))
+        	    noRecentChats.text = "No recent chats"
+        	    noRecentChats.textAlignment = .Center
+        	    noRecentChats.textColor = UIColor(red: 153/255, green: 153/255, blue: 153/255, alpha: 0.5)
+        	}
+        	return noRecentChats
+    	}
 }

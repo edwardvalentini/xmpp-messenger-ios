@@ -5,6 +5,7 @@
 //  Created by Paul on 20/02/2015.
 //  Copyright (c) 2015 ProcessOne. All rights reserved.
 //
+//  Bugs fixed by Orkhan Alizade
 
 import UIKit
 import xmpp_messenger_ios
@@ -69,6 +70,15 @@ class ChatViewController: JSQMessagesViewController, OneMessageDelegate, Contact
 				addRecipient()
 			}
 		}
+		
+		// Mark: Checking the internet connection
+        	if !OneChat.sharedInstance.isConnectionAvailable() {
+            		let alertController = UIAlertController(title: "Error", message: "Please check the internet connection.", preferredStyle: UIAlertControllerStyle.Alert)
+            			alertController.addAction(UIAlertAction(title: "Dissmiss", style: UIAlertActionStyle.Default, handler: { (UIAlertAction) -> Void in
+                		//do something
+            		}))
+            		self.presentViewController(alertController, animated: true, completion: nil)
+        	}
 	}
 	
 	override func viewDidAppear(animated: Bool) {
@@ -96,13 +106,6 @@ class ChatViewController: JSQMessagesViewController, OneMessageDelegate, Contact
 		if userDetails == nil {
             		navigationItem.title = recipient.displayName
         	}
-		
-		if !OneChats.knownUserForJid(jidStr: recipient.jidStr) {
-			OneChats.addUserToChatList(jidStr: recipient.jidStr)
-		} else {
-			messages = OneMessage.sharedInstance.loadArchivedMessagesFrom(jid: recipient.jidStr)
-			finishReceivingMessageAnimated(true)
-		}
 	}
 	
 	// Mark: JSQMessagesViewController method overrides
@@ -148,6 +151,13 @@ class ChatViewController: JSQMessagesViewController, OneMessageDelegate, Contact
 				JSQSystemSoundPlayer.jsq_playMessageSentSound()
 				self.finishSendingMessageAnimated(true)
 			})
+			
+			if !OneChats.knownUserForJid(jidStr: recipient.jidStr) {
+				OneChats.addUserToChatList(jidStr: recipient.jidStr)
+			} else {
+				messages = OneMessage.sharedInstance.loadArchivedMessagesFrom(jid: recipient.jidStr)
+				finishReceivingMessageAnimated(true)
+			}
 		}
 	}
 	

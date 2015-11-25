@@ -29,6 +29,18 @@ class OpenChatsTableViewController: UITableViewController, OneRosterDelegate {
 		}
 		
 		tableView.rowHeight = 50
+		
+		// Mark: Will show the label with the text "No recent chats" if there is no open chats
+        	view.addSubview(OneChats.noRecentChats())
+        	
+        	// Mark: Checking the internet connection
+        	if !OneChat.sharedInstance.isConnectionAvailable() {
+            		let alertController = UIAlertController(title: "Error", message: "Please check the internet connection.", preferredStyle: UIAlertControllerStyle.Alert)
+            			alertController.addAction(UIAlertAction(title: "Dissmiss", style: UIAlertActionStyle.Default, handler: { (UIAlertAction) -> Void in
+                		//do something
+            		}))
+            		self.presentViewController(alertController, animated: true, completion: nil)
+        	}
 	}
 	
 	override func viewWillDisappear(animated: Bool) {
@@ -86,6 +98,10 @@ class OpenChatsTableViewController: UITableViewController, OneRosterDelegate {
             
             		refreshAlert.addAction(UIAlertAction(title: "Clear message history", style: .Destructive, handler: { (action: UIAlertAction!) in
                 		OneChats.removeUserAtIndexPath(indexPath)
+                		
+                		// Mark: Will show the label with the text "No recent chats" if there is no open chats
+                		self.view.addSubview(OneChats.noRecentChats())
+                		
                 		tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Left)
             		}))
             
