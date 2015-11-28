@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.homepage         = "https://github.com/processone/xmpp-messenger-ios"
   s.license          = 'MIT'
   s.author           = { "ProcessOne" => "pmglemaire@gmail.com" }
-  s.source           = { :git => "https://github.com/processone/xmpp-messenger-ios.git", :tag => s.version }
+  s.source           = { :git => "https://github.com/edwardvalentini/xmpp-messenger-ios.git", :tag => s.version }
 
 s.platform = :ios, '8.0'
 s.ios.deployment_target = '8.0'
@@ -27,7 +27,7 @@ s.requires_arc = true
 s.dependency 'FMDB', '~> 1.0'
 s.dependency 'JSQMessagesViewController'
 s.dependency 'JSQSystemSoundPlayer', '~> 2.0'
-s.dependency 'XMPPFramework'
+s.dependency 'XMPPFramework', :git => 'https://github.com/edwardvalentini/XMPPFramework.git'
 
 s.ios.frameworks = 'Foundation', 'CoreData', 'UIKit', 'CFNetwork', 'Security', 'XMPPFramework'
 s.source_files = ['Pod/Classes/**/*.{swift}']
